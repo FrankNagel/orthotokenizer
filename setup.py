@@ -62,6 +62,7 @@ setup(
         'console_scripts': [
             "create_profiles = orthotokenizer.scripts.create_profiles:main",
             "tokenize = orthotokenizer.scripts.tokenize:main",
+            "context_tokenizer = orthotokenizer.scripts.context_tokenizer:main",
         ]
     },
 )
