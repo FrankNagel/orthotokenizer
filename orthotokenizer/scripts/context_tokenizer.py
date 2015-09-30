@@ -60,13 +60,14 @@ def tokenize(args):
     #prepare profile
     profile = context_tokenizer.Profile.read_profile(args['<profile>'])
 
-    order_spec = args['--order'].split(',')
-    for spec in order_spec:
-        if spec not in ('size', 'context', 'reverse'):
-            print("Error: Unrecognized order criterium: '%s'" % spec, file=sys.stderr)
-            sys.exit(1)
-    if order_spec:
-        profile.sort(order_spec)
+    if args['--order'] is not None:
+        order_spec = args['--order'].split(',')
+        for spec in order_spec:
+            if spec not in ('size', 'context', 'reverse'):
+                print("Error: Unrecognized order criterium: '%s'" % spec, file=sys.stderr)
+                sys.exit(1)
+        if order_spec:
+            profile.sort(order_spec)
 
     normalize = args['--normalize']
     if normalize:
