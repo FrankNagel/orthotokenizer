@@ -123,7 +123,7 @@ class Profile(object):
                 profile_fp.write('frequency\tleft\tgraphemes\tright\tcodepoints\tnames\n')
                 for grapheme, count in graphemes.most_common():
                     codepoints = ' '.join('U+%04i'% ord(cp) for cp in grapheme)
-                    names = ', '.join(unicodedata.name(cp) for cp in grapheme)
+                    names = ', '.join(unicodedata.name(cp, 'Unknown codepoint') for cp in grapheme)
                     profile_fp.write('%7d\t\t%s\t%s\t%s\n' % (count, grapheme, codepoints, names))
 
 
