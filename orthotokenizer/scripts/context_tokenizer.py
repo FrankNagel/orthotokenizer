@@ -130,7 +130,7 @@ def tokenize(args):
         fp.write('graphemes\tfrequency\tcodepoints\tnames\n')
         for graphemes, frequency in sorted(problem_chars.items()):
             row = [graphemes, str(frequency), ' '.join('U+%04i'% ord(cp) for cp in graphemes),
-                   ', '.join(unicodedata.name(cp) for cp in graphemes)]
+                   ', '.join(unicodedata.name(cp, 'Unknown codepoint') for cp in graphemes)]
             fp.write('\t'.join(row))
             fp.write('\n')
 
