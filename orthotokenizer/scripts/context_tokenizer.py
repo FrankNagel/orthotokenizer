@@ -59,6 +59,10 @@ def create_profile(args):
 def tokenize(args):
     #prepare profile
     profile = context_tokenizer.Profile.read_profile(args['<profile>'])
+    if 'graphemes' not in profile.fieldnames:
+        print('Error: Expecting a column named "graphemes" in the profile definition.', file=sys.stderr)
+        print('\tRecognized names are "graphemes", "left", "right", "class".', file=sys.stderr)
+        sys.exit(1)
 
     if args['--order'] is not None:
         order_spec = args['--order'].split(',')
