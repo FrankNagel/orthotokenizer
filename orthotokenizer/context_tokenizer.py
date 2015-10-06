@@ -239,6 +239,7 @@ def tokenize_linear(words, profile, transliterate=None, use_context=False, ignor
 
     tokenized = []
     problems = defaultdict(int)
+    zero_length_matching = collections.OrderedDict()
     for word in words:
         run = 0
         end = len(word)
@@ -253,6 +254,9 @@ def tokenize_linear(words, profile, transliterate=None, use_context=False, ignor
             for pattern in profile.patterns:
                 match = pattern.c_graphemes.match(word, run)
                 if not match:
+                    continue
+                if len(match.group()) == 0:
+                    zero_length_matching[pattern] = True
                     continue
                 if use_context:
                     pre_match = pattern.c_left.search(word, 0, match.start())
@@ -280,6 +284,9 @@ def tokenize_linear(words, profile, transliterate=None, use_context=False, ignor
                 if match_logger:
                     match_logger.write('\t%s\t%s\n' % (word[run], missing))
                 run += 1
+    for pattern in zero_length_matching:
+        print("Warning: The following row produces zero-length matches:\n\t%s" % pattern.defining_dict,
+              file=sys.stderr)
     return tokenized, problems
 
 
@@ -322,8 +329,10 @@ def tokenize_global(words, profile, transliterate=None, use_context=False, ignor
         matches = dict()
         done = set()
         for pattern in profile.patterns:
+            have_zero_length_matches = False
             for match in pattern.c_graphemes.finditer(word):
-                if any(x in done for x in xrange(match.start(), match.end())):
+                have_zero_length_matches = have_zero_length_matches or len(match.group()) == 0
+                if any(x in done for x in xrange(match.start(), match.end())) or len(match.group()) == 0:
                     continue
                 if use_context:
                     pre_match = pattern.c_left.search(word, 0, match.start())
@@ -335,6 +344,9 @@ def tokenize_global(words, profile, transliterate=None, use_context=False, ignor
                 for x in xrange(match.start(), match.end()):
                     done.add(x)
                 matches[match.start()] = (match, pattern)
+            if have_zero_length_matches:
+                print("Warning: The following row produces zero-length matches:\n\t%s" % pattern.defining_dict,
+                      file=sys.stderr)
         row = [word, []]
         tokenized.append(row)
         if transliterate:
